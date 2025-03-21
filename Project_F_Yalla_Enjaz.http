@@ -1,0 +1,6 @@
+@Project_F_Yalla_Enjaz_HostAddress = http://localhost:5287
+
+GET {{Project_F_Yalla_Enjaz_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
