@@ -55,6 +55,11 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
             B_PERSON.save();
             person.ID = B_PERSON.ID;
+            Cradet_DTO card = Businees_Cradt_Card.Create_New_DTO_Cradete_Card(B_PERSON.ID);
+
+            Businees_Cradt_Card B_Cradte_Card = new Businees_Cradt_Card(card, Businees_Cradt_Card.enmode.ADDNEW);
+            B_Cradte_Card.save();
+           
 
 
              return CreatedAtRoute("ADD PERSON", new {id = person.ID}, person);

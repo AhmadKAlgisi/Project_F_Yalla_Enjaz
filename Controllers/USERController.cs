@@ -71,6 +71,14 @@ namespace Project_F_Yalla_Enjaz.Controllers
             {
                 person.ID = B_PERSON.ID;
 
+
+                Cradet_DTO card = Businees_Cradt_Card.Create_New_DTO_Cradete_Card(B_PERSON.ID);
+
+                Businees_Cradt_Card B_Cradte_Card = new Businees_Cradt_Card(card, Businees_Cradt_Card.enmode.ADDNEW);
+                B_Cradte_Card.save();
+
+
+
                 User_DTO user = new User_DTO(0, person.ID);
                 Business_User B_user = new Business_User(user, Business_User.enmode.ADDNEW);
                  if(B_user.save())
