@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Project_F_Yalla_Enjaz", "Pr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Poject_F_Data_Acsses_Yalla_Enjaz", "..\Poject_F_Data_Acsses_Yalla_Enjaz\Poject_F_Data_Acsses_Yalla_Enjaz.csproj", "{4D9AA219-9B67-4F10-A5D8-3735C3F85506}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Businees_Logic_Project", "..\Businees_Logic_Project\Businees_Logic_Project.csproj", "{49B1282F-3F1F-4933-80CB-74C6470BF67D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Businees_Logic_Project", "..\Businees_Logic_Project\Businees_Logic_Project.csproj", "{49B1282F-3F1F-4933-80CB-74C6470BF67D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

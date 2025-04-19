@@ -8,11 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudinaryDotNet" Version="1.27.5" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Businees_Logic_Project\Businees_Logic_Project.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="imeges\" />
   </ItemGroup>
 
 </Project>

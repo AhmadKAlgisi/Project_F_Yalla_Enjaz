@@ -106,6 +106,42 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
 
+        [HttpGet("GET_INFO_FROM_STUDENT_UNVIRSTY_PERSON_USED_SHOW_SERVES_BY_ID_STUDENT{id_student}", Name = "GET_INFO_FROM_STUDENT_UNVIRSTY_PERSON_USED_SHOW_SERVES_BY_ID_STUDENT")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Person_DTO> GET_INFO_FROM_STUDENT_UNVIRSTY_PERSON_USED_SHOW_SERVES_BY_ID_STUDENT(int id_student)
+        {
+
+            if (id_student < 1)
+            {
+                return BadRequest("ERROR: enter data.... ");
+            }
+
+
+            INFO_FROM_STUDENT_UNVIRSTY_PERSON_USED_SHOW_SERVES_DTO object_DTO = Businees_Student.GET_INFO_FROM_STUDENT_UNVIRSTY_PERSON_USED_SHOW_SERVES_BY_ID_STUDENT(id_student);
+
+
+
+
+
+            if (object_DTO != null)
+            {
+             
+                return Ok(object_DTO);
+            }
+            else
+            {
+                return NotFound("Data Not Found ....");
+            }
+
+
+
+
+        }
+
+
+
 
 
 

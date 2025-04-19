@@ -74,27 +74,33 @@ namespace Project_F_Yalla_Enjaz.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Person_DTO> Ubdate_Person(int id,Person_DTO person)
+        public ActionResult<Person_DTO> Ubdate_Person(int id, Info_Person_In_Profile_Person_DTO_and_update person)
         {
 
-            if (id<1||string.IsNullOrEmpty(person.F_name) || string.IsNullOrEmpty(person.L_name) || string.IsNullOrEmpty(person.Email) || string.IsNullOrEmpty(person.Password))
+            if (string.IsNullOrEmpty(person.F_name) || string.IsNullOrEmpty(person.L_name) || string.IsNullOrEmpty(person.Email) || string.IsNullOrEmpty(person.Phone))
             {
                 return BadRequest("Invalid person data.");
             }
 
-            Business_Person B_PERSON = Business_Person.GET_PERSON_BY_ID(id);//find object if success change mode ubdate 
+            // Business_Person B_PERSON = Business_Person.GET_PERSON_BY_ID(id);//find object if success change mode ubdate 
 
-            if (B_PERSON != null)
+            Info_Person_In_Profile_Person_DTO_and_update B_PERSON_DTO = Business_Person.GET_Info_PERSON_BY_ID_Person_Using_Profile_Person(id);
+
+
+            if (B_PERSON_DTO != null)
             {
-                //ID NOT ALLOW CHANGE .....
-                B_PERSON.F_name = person.F_name;
-                B_PERSON.L_name = person.L_name;
-                B_PERSON.Email = person.Email;
-                B_PERSON.Password = person.Password;
 
-                if (B_PERSON.save())
+                Business_Person B_berson = new Business_Person(B_PERSON_DTO, Business_Person.enMode.Update);
+                B_berson.F_name = person.F_name;
+                B_berson.L_name = person.L_name;
+                B_berson.Gender = person.Gender;
+                B_berson.Phone = person.Phone;
+                B_berson.Personal_profile = person.Personal_profile;
 
-                    return Ok(B_PERSON.SDTO);
+
+                if (B_berson.save())
+
+                    return Ok(B_berson.SDTO_MAIN_PROFILE);
 
                 else
                 {
@@ -144,6 +150,38 @@ namespace Project_F_Yalla_Enjaz.Controllers
         }
 
 
+
+
+
+
+
+        [HttpGet("GET_Info_PERSON_BY_ID_Person_Using_Profile_Person{ID_Person}", Name = "GET_Info_PERSON_BY_ID_Person_Using_Profile_Person")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Person_DTO> GET_Info_PERSON_BY_ID_Person_Using_Profile_Person(int ID_Person)
+        {
+
+            if (ID_Person < 1)
+            {
+                return BadRequest("ERROR: enter data ");
+            }
+
+            Info_Person_In_Profile_Person_DTO_and_update Person_Info = Business_Person.GET_Info_PERSON_BY_ID_Person_Using_Profile_Person(ID_Person);
+
+            if (Person_Info != null)
+            {
+               
+
+                return Ok(Person_Info);
+            }
+            else
+            {
+                return NotFound("Data Not Found ....");
+            }
+
+
+        }
 
 
 

@@ -42,9 +42,37 @@ namespace Project_F_Yalla_Enjaz.Controllers
             else
             
                 return Ok(All_Branch_Serves);
-
-
          
+
+
+        }
+
+
+        [HttpGet("GET_BRANCH_SERVES_BY_ID{iD_Branch_Serves}", Name = "GET_BRANCH_SERVES_BY_ID")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Person_DTO> GET_BRANCH_SERVES_BY_ID(int iD_Branch_Serves)
+        {
+
+            if (iD_Branch_Serves < 1)
+            {
+                return BadRequest("ERROR: enter data.... ");
+            }
+
+
+            Business_Branch_Serves branch_serves = Business_Branch_Serves.GET_Branch_Serves_By_ID(iD_Branch_Serves);
+
+            if (branch_serves != null)
+            {
+                Branch_Serves_DTO serves_branch_SDTO = branch_serves.SDTO;
+
+                return Ok(serves_branch_SDTO);
+            }
+            else
+            {
+                return NotFound("لا يوجد بيانات ......");
+            }
 
 
         }
