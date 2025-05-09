@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Poject_F_Data_Acsses_Yalla_Enjaz;
+using System.Linq.Expressions;
 
 namespace Project_F_Yalla_Enjaz.Controllers
 {
@@ -196,6 +197,192 @@ namespace Project_F_Yalla_Enjaz.Controllers
         }
 
 
+
+        [HttpGet("GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_modern_services", Name = "GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_modern_services")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<Semple_Cradte_Info_ON_Server_Student_By_Pranch_Server> GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_modern_services(int id_branch_serves,int id_unvirsty)
+        {
+            if (id_branch_serves < 0 || id_unvirsty < 0)
+                return BadRequest("Invaild data input ...");
+
+            var ALL_Info_Student = Businees_Serves_Student.GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_modern_services(id_branch_serves, id_unvirsty);
+
+            if (ALL_Info_Student.Count != 0)
+            {
+                return Ok(ALL_Info_Student);
+            }
+            else
+                return NotFound("لا يوجد مقدمين للخدمة متاحين ");
+        }
+
+
+
+
+        [HttpGet("GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_The_most_distinguished", Name = "GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_The_most_distinguished")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<Semple_Cradte_Info_ON_Server_Student_By_Pranch_Server> GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_The_most_distinguished(int id_branch_serves, int id_unvirsty)
+        {
+            if (id_branch_serves < 0 || id_unvirsty < 0)
+                return BadRequest("Invaild data input ...");
+
+            var ALL_Info_Student = Businees_Serves_Student.GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_The_most_distinguished(id_branch_serves, id_unvirsty);
+
+            if (ALL_Info_Student.Count != 0)
+            {
+                return Ok(ALL_Info_Student);
+            }
+            else
+                return NotFound("لا يوجد مقدمين للخدمة متاحين ");
+        }
+
+
+
+
+
+        [HttpGet("GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_OLder_services", Name = "GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_OLder_services")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<Semple_Cradte_Info_ON_Server_Student_By_Pranch_Server> GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_OLder_services(int id_branch_serves, int id_unvirsty)
+        {
+            if (id_branch_serves < 0 || id_unvirsty < 0)
+                return BadRequest("Invaild data input ...");
+
+            var ALL_Info_Student = Businees_Serves_Student.GET_SAMPLE_INFO_FROM_SERVER_STUDENT_BY_ID_Branch_serves_and_ID_Unvirsty_For_OLder_services(id_branch_serves, id_unvirsty);
+
+            if (ALL_Info_Student.Count != 0)
+            {
+                return Ok(ALL_Info_Student);
+            }
+            else
+                return NotFound("لا يوجد مقدمين للخدمة متاحين ");
+        }
+
+
+
+        [HttpGet("ADMIN_Function_GET_LIST_ID_SERVES_STUDENT_IN_PROGRASS_processing", Name = "ADMIN_Function_GET_LIST_ID_SERVES_STUDENT_IN_PROGRASS_processing")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<Name_Serves_DTO> ADMIN_Function_GET_LIST_ID_SERVES_STUDENT_IN_PROGRASS_processing()
+        {
+            var list_ID_SERVES_STUDENT = Businees_Serves_Student.ADMIN_Function_GET_LIST_ID_SERVES_STUDENT_IN_PROGRASS_processing();
+
+            if (list_ID_SERVES_STUDENT.Count == 0)
+            {
+                return NotFound("لا يوجد اي خدمة معلقة حاليا .....");
+            }
+            else
+                return Ok(list_ID_SERVES_STUDENT);
+
+        }
+
+
+
+
+        [HttpGet("GET_Serves_Student_By_Id{id}", Name = "GET_Serves_Student_By_Id")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Serves_Student_DTO> GET_Serves_Student_By_Id(int id)
+        {
+
+            if (id < 1)
+            {
+                return BadRequest("ERROR: enter data ");
+            }
+
+
+            Businees_Serves_Student serves_student = Businees_Serves_Student.GET_SERVES_STUDENT_BY_ID(id);
+
+            if (serves_student != null)
+            {
+                Serves_Student_DTO DTO = serves_student.SDTO;
+
+                return Ok(DTO);
+            }
+            else
+            {
+                return NotFound("Data Not Found ....");
+            }
+
+
+        }
+
+
+
+
+        [HttpPut("Accept_And_to_publish_Serves_Student{id_Serves_student}", Name = "Accept_And_to_publish_Serves_Student")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> Accept_And_to_publish_Serves_Student(int id_Serves_student)
+        {
+
+            if (id_Serves_student < 1)
+            {
+                return BadRequest("Invalid Serves Student .....");
+            }
+
+
+
+            Businees_Serves_Student B_serves = Businees_Serves_Student.GET_SERVES_STUDENT_BY_ID(id_Serves_student);
+            if (B_serves != null)
+            {
+                //ubdate in the inside Memorey
+                //ID NOT ALLOW CHANGE .....
+                B_serves.ID_Statue_Serves = 2;
+
+
+
+
+
+
+                //ubdate in the data base 
+                if (B_serves.save())
+                {
+                    Businees_Student student = Businees_Student.GET_Student_BY_ID(B_serves.ID_Student);
+                    Business_Person person = Business_Person.GET_PERSON_BY_ID(student.ID_person);
+                    Businnes_Send_Email send_email = new Businnes_Send_Email();
+
+                    string subject = "✅ تم قبول خدمتك على منصة يلا إنجاز";
+
+                    string body = $@"
+مرحباً {person.F_name} {person.L_name} 👋
+
+نود إعلامك بأن خدمتك بعنوان: ""{B_serves.Service_Address}""  
+تمت مراجعتها والموافقة على نشرها من قبل فريق الدعم الفني في منصة ""يلا إنجاز"" ✅
+
+أصبح بإمكان المستخدمين الآن مشاهدة خدمتك وطلبها عبر المنصة.
+
+📅 تاريخ الموافقة: {DateTime.Now:yyyy-MM-dd HH:mm}
+
+مع تمنياتنا لك بالتوفيق والنجاح ✨  
+فريق يلا إنجاز
+";
+
+
+
+                    await send_email.SendEmailAsync(person.Email, subject, body);
+
+
+                    return Ok("تم قبول الخدمة ....");
+
+
+                }
+
+                else
+                {
+                    return StatusCode(500, new { Message = "EROOR : NOT UBDATE DATA ...." });
+                }
+
+            }
+            else
+                return NotFound("لا يوجد خدمة لعرضها ......");
+
+
+        }
 
 
     }

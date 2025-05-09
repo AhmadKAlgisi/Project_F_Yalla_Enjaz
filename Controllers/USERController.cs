@@ -56,7 +56,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
         [HttpPost("ADD USER", Name = "ADD USER")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<USER_ADD_DTO> AddPesron(USER_ADD_DTO USER)
+        public async Task <ActionResult> AddUser(USER_ADD_DTO USER)
         {
             if ( string.IsNullOrEmpty(USER.F_name) || string.IsNullOrEmpty(USER.L_name) || string.IsNullOrEmpty(USER.Email) || string.IsNullOrEmpty(USER.passowrd))
             {
@@ -76,6 +76,16 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
                 Businees_Cradt_Card B_Cradte_Card = new Businees_Cradt_Card(card, Businees_Cradt_Card.enmode.ADDNEW);
                 B_Cradte_Card.save();
+
+                Businnes_Send_Email Email = new Businnes_Send_Email();
+                string subject = "مرحبا بك عزيزي";
+                string body = $"أهلاً بكم في منصة يلا إنجاز.\n" +
+$"نسعى أن تكون هذه منصتكم الأساسية لتحقيق مصدر دخل لكم.\n" +
+$"يجب عليكم الاحتفاظ بمعلومات بطاقتكم البنكية الافتراضية.\n Number_Card :{B_Cradte_Card.Number_Card}\n" +
+                    $"Pin_Code :{B_Cradte_Card.Pin_Code}\n" +
+                    $"Palnce :{B_Cradte_Card.Palnce}\n";
+                await Email.SendEmailAsync(B_PERSON.Email, subject, body);
+
 
 
 

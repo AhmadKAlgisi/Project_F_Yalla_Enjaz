@@ -4,6 +4,9 @@ using Businees_Logic_Project;
 using Poject_F_Data_Acsses_Yalla_Enjaz;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Authentication.BearerToken;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using System.Formats.Asn1;
 
 namespace Project_F_Yalla_Enjaz.Controllers
 {
@@ -11,14 +14,29 @@ namespace Project_F_Yalla_Enjaz.Controllers
     [ApiController]
     public class Person_Controller : ControllerBase
     {
-        [HttpGet("GET_PERSON_PY_ID{id}",Name = "GET_PERSON_PY_ID")]
+        private readonly Cloudinary _cloudinary;
+
+        public Person_Controller()
+        {
+            Account account = new Account(
+                "dlazpanst",     // استبدلها بـ Cloud name من Cloudinary
+                "413456772532198",        // استبدلها بـ API Key
+                "IUAKhdveNw7Sz4SLWrmj2qMQBCk"      // استبدلها بـ API Secret
+            );
+            _cloudinary = new Cloudinary(account);
+        }
+
+
+
+
+        [HttpGet("GET_PERSON_PY_ID{id}", Name = "GET_PERSON_PY_ID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Person_DTO> GET_PERSON_BY_ID(int id)
         {
 
-            if(id<1)
+            if (id < 1)
             {
                 return BadRequest("ERROR: enter data ");
             }
@@ -26,9 +44,9 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
             Business_Person person = Business_Person.GET_PERSON_BY_ID(id);
 
-            if (person!=null)
+            if (person != null)
             {
-                Person_DTO DTO = person.SDTO;
+                Info_Person_In_Profile_Person_DTO_and_update DTO = person.SDTO_MAIN_PROFILE;
 
                 return Ok(DTO);
             }
@@ -41,12 +59,12 @@ namespace Project_F_Yalla_Enjaz.Controllers
         }
 
 
-        [HttpPost("ADD PERSON",Name ="ADD PERSON")]
+        [HttpPost("ADD PERSON", Name = "ADD PERSON")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Person_DTO> AddPesron(Person_DTO person)
         {
-            if(string.IsNullOrEmpty(person.F_name) || string.IsNullOrEmpty(person.L_name) || string.IsNullOrEmpty(person.Email)|| string.IsNullOrEmpty(person.Password))
+            if (string.IsNullOrEmpty(person.F_name) || string.IsNullOrEmpty(person.L_name) || string.IsNullOrEmpty(person.Email) || string.IsNullOrEmpty(person.Password))
             {
                 return BadRequest("Invalid person data.");
             }
@@ -59,17 +77,17 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
             Businees_Cradt_Card B_Cradte_Card = new Businees_Cradt_Card(card, Businees_Cradt_Card.enmode.ADDNEW);
             B_Cradte_Card.save();
-           
 
 
-             return CreatedAtRoute("ADD PERSON", new {id = person.ID}, person);
 
-          
+            return CreatedAtRoute("ADD PERSON", new { id = person.ID }, person);
+
+
 
         }
 
 
-        [HttpPut("UPDATE_PERSON {id}",Name = "UPDATE_PERSON")]
+        [HttpPut("UPDATE_PERSON {id}", Name = "UPDATE_PERSON")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -119,11 +137,11 @@ namespace Project_F_Yalla_Enjaz.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-   //     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //     [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<string> Delete_Person(int id)
         {
 
-            if(id < 1)
+            if (id < 1)
             {
                 return BadRequest($"THE ID {id} Bad Data ...");
             }
@@ -171,7 +189,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
             if (Person_Info != null)
             {
-               
+
 
                 return Ok(Person_Info);
             }
@@ -179,6 +197,143 @@ namespace Project_F_Yalla_Enjaz.Controllers
             {
                 return NotFound("Data Not Found ....");
             }
+
+
+        }
+
+
+
+
+        [HttpPut("Update_Imege_Profile {id_Person}", Name = "Update_Imege_Profile")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task< ActionResult>Update_Imege_Profile(int id_Person, IFormFile imageFile)
+        {
+
+            if (imageFile == null || imageFile.Length == 0 || id_Person < 0)
+                return BadRequest("No file uploaded.");
+
+
+
+            //get all info from data base 
+
+            Info_Person_In_Profile_Person_DTO_and_update B_PERSON_DTO = Business_Person.GET_Info_PERSON_BY_ID_Person_Using_Profile_Person(id_Person);
+
+
+            if (B_PERSON_DTO != null)
+            {
+                //create object from business logic becuse use save methode
+                Business_Person B_berson = new Business_Person(B_PERSON_DTO, Business_Person.enMode.Update);
+
+                //work cloundary
+
+                //name folder exite all imege
+                string folder = "student_images";
+
+                //if exite older imege in data base delete note(ممكن تكةن null عشان هيك حطناها null)
+                if (!string.IsNullOrEmpty(B_berson.Main_Imege_Url))
+                {
+                    var uri = new Uri(B_berson.Main_Imege_Url);
+                    var publicId = Path.GetFileNameWithoutExtension(uri.AbsolutePath);//اخذ extintion عشان يعرف id تبع الصوؤة
+                    string fullPublicId = $"{folder}/{publicId}";
+
+                    var deleteParams = new DeletionParams(fullPublicId);
+                    var deletionResult = await _cloudinary.DestroyAsync(deleteParams);
+
+                    if (deletionResult.Result != "ok" && deletionResult.Result != "not found")
+                        return StatusCode(500, new { Message = "Failed to delete old image from Cloudinary." });
+                }
+
+
+
+                using var stream = imageFile.OpenReadStream();
+                var uploadParams = new ImageUploadParams()
+                {
+                    File = new FileDescription(imageFile.FileName, stream),
+                    Folder = folder
+                };
+
+
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);//اخذ الصورة والباث وايضا اسم الفولدر الي بدو يخزن عليه 
+
+                if (uploadResult.Error != null)
+                    return StatusCode(500, new { Message = "Cloudinary Error: " + uploadResult.Error.Message });
+
+                // أخذ الرابط النهائي للصورة
+                string cloudinaryUrl = uploadResult.SecureUrl.ToString();//path end 
+
+                // save in database  
+
+                B_berson.Main_Imege_Url = cloudinaryUrl;
+
+
+                //save data in data base 
+
+                if (B_berson.save())
+
+                    return Ok(B_berson.Main_Imege_Url);
+
+                else
+                {
+                    return StatusCode(500, new { Message = "EROOR : NOT UBDATE DATA ...." });
+                }
+
+            }
+
+            else
+                return NotFound("Not Found Object ...");
+
+
+        }
+
+
+
+
+
+        [HttpPut("Change_Password {id_person}", Name = "Change_Password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Person_DTO> Change_Password(int id_person,string Current_Password,string New_Password)
+        {
+
+            if (id_person <0|| string.IsNullOrEmpty(Current_Password) || string.IsNullOrEmpty(New_Password))
+            {
+                return BadRequest("بيانات غير صالحة");
+            }
+
+            Business_Person B_PERSON = Business_Person.GET_PERSON_BY_ID(id_person);//find object if success change mode ubdate 
+
+          
+
+            if (B_PERSON != null)
+            {
+
+
+                if (B_PERSON.Password == Current_Password)
+                {
+                    B_PERSON.Password = New_Password;
+
+                    if (B_PERSON.change_passowrd(id_person, B_PERSON.Password))
+
+                        return Ok("تم تغير كلمة المرور بنجاح");
+
+                    else
+                    {
+                        return StatusCode(500, new { Message = "EROOR :حدث خطأ أثناء حفظ البيانات." });
+                    }
+
+                }
+
+                else
+                    return BadRequest("كلمة المرور الحالية غير صحيحة");
+
+            }
+            else
+                return NotFound("المستخدم غير موجود");
 
 
         }

@@ -26,7 +26,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
         }
 
 
-        [HttpGet("GET_ALL_BRANCH_SERVES_USING_ID_BRANCH_SERVES{ID}", Name = "GET_ALL_BRANCH_SERVES_USING_ID_BRANCH_SERVES")]
+        [HttpGet("GET_ALL_BRANCH_SERVES_USING_ID_NAME_SERVES{ID}", Name = "GET_ALL_BRANCH_SERVES_USING_ID_NAME_SERVES")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
