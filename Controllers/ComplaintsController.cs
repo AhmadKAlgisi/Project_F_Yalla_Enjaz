@@ -32,5 +32,35 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
 
+
+        [HttpPost("Add_Complaints", Name = "Add_Complaints")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<Rating_DTO> Add_Complaints(Complaints_DTO Complaint)
+        {
+            if (string.IsNullOrEmpty(Complaint.Description) || Complaint.Orders_ID< 0)
+            {
+                return BadRequest("Invalid person data.");
+            }
+
+
+            Businees_Complaints comple = new Businees_Complaints(Complaint, Businees_Complaints.enmode.ADDNEW);
+            if (comple.save())
+            {
+                Complaint.ID = comple.ID;
+                Complaint.ID_stute = 18;
+                comple.ID_stute = 18;
+                return Ok(comple.SDTO);
+            }
+            else
+                return StatusCode(500, new { Message = "EROOR : NOT UBDATE DATA ...." });
+
+
+        }
+
+
+
+
     }
 }

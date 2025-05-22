@@ -95,26 +95,26 @@ namespace Project_F_Yalla_Enjaz.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = "Error fetching image:"+ex.Message});
+                return StatusCode(500, new { Message = "Error fetching image:" + ex.Message });
             }
         }
 
 
 
-        [HttpGet("GET_ALL_IMEGES_BY_ID_SERVES {ID_Serves}",Name = "GET_ALL_IMEGES_BY_ID_SERVES")]
+        [HttpGet("GET_ALL_IMEGES_BY_ID_SERVES {ID_Serves}", Name = "GET_ALL_IMEGES_BY_ID_SERVES")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Imege_DTO> GET_ALL_IMEGES_BY_ID_SERVES(int ID_Serves)
         {
-            if(ID_Serves<1)
+            if (ID_Serves < 1)
             {
                 return BadRequest("Invalid Id Serves ....");
             }
             var ALL_Imege = Businnes_Imege.GET_ALL_IMEGES_BY_ID_SERVES(ID_Serves);
 
-            if(ALL_Imege!=null)
+            if (ALL_Imege != null)
             {
                 if (ALL_Imege.Count != 0)
                     return Ok(ALL_Imege);
@@ -122,8 +122,8 @@ namespace Project_F_Yalla_Enjaz.Controllers
                     return NotFound("لا يوجد صور لهذه الخدمة ");
 
             }
-         
-                return StatusCode(500, new { Message = "ERROR: server error ....." });
+
+            return StatusCode(500, new { Message = "ERROR: server error ....." });
 
 
 
@@ -141,9 +141,9 @@ namespace Project_F_Yalla_Enjaz.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
         [HttpPut("Updata_imege")]
-        public async Task<IActionResult> Updata_imege(int id_imege,IFormFile imageFile)
+        public async Task<IActionResult> Updata_imege(int id_imege, IFormFile imageFile)
         {
-            if (imageFile == null || imageFile.Length == 0 || id_imege < 0 )
+            if (imageFile == null || imageFile.Length == 0 || id_imege < 0)
                 return BadRequest("No file uploaded.");
 
 
@@ -186,7 +186,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
             if (B_imege.save())
             {
-               
+
                 return Ok(B_imege.SDTO);
             }
             else
@@ -194,7 +194,37 @@ namespace Project_F_Yalla_Enjaz.Controllers
         }
 
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
+        [HttpPost("UploadImage")]
+        public async Task<IActionResult> UploadImage(IFormFile imageFile)
+        {
+            if (imageFile == null || imageFile.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            // قراءة الصورة كـ Stream
+            using var stream = imageFile.OpenReadStream();
+
+            var uploadParams = new ImageUploadParams()
+            {
+                File = new FileDescription(imageFile.FileName, stream),
+                Folder = "student_images" // مجلد داخل Cloudinary (اختياري)
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);//اخذ الصورة والباث وايضا اسم الفولدر الي بدو يخزن عليه 
+
+            if (uploadResult.Error != null)
+                return StatusCode(500, new { Message = "Cloudinary Error: " + uploadResult.Error.Message });
+
+            // أخذ الرابط النهائي للصورة
+            string cloudinaryUrl = uploadResult.SecureUrl.ToString();//path end 
+
+            return Ok(cloudinaryUrl);
+           
+                return StatusCode(500, new { Message = "ERROR: Not saved to database." });
+        }
 
     }
-}
+    }

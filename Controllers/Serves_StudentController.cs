@@ -280,7 +280,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
 
-        [HttpGet("GET_Serves_Student_By_Id{id}", Name = "GET_Serves_Student_By_Id")]
+        [HttpGet("GET_Serves_Student_By_Id/{id}", Name = "GET_Serves_Student_By_Id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -383,6 +383,78 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
         }
+
+
+
+        [HttpDelete("ADMIN_Delete_Serves_Student_By_Id_Serve_From_Admin {ID_serves_student}", Name = "ADMIN_Delete_Serves_Student_By_Id_Serve_From_Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> ADMIN_Delete_Serves_Student_By_Id_Serve_From_Admin(int ID_serves_student)
+        {
+
+            if (ID_serves_student < 1)
+            {
+                return BadRequest($"THE ID {ID_serves_student} Bad Data ...");
+            }
+            else
+            {
+                Businees_Serves_Student serves_student = Businees_Serves_Student.GET_SERVES_STUDENT_BY_ID(ID_serves_student);
+
+
+                if (serves_student != null)
+                {
+
+                    if (serves_student.ADMIN_Delete_Serves_Student_By_Id_Serve_From_Admin(ID_serves_student))
+                    {
+                        Businnes_Send_Email send_email = new Businnes_Send_Email();
+                        Businees_Student student = Businees_Student.GET_Student_BY_ID(serves_student.ID_Student);
+                        Business_Person person = Business_Person.GET_PERSON_BY_ID(student.ID_person);
+
+
+                        string subject = "❌ تم رفض خدمتك على منصة يلا إنجاز";
+
+                        string body = $@"
+مرحباً {person.F_name} {person.L_name} 👋
+
+نأسف لإبلاغك بأنه بعد مراجعة خدمتك بعنوان: ""{serves_student.Service_Address}""، قررت إدارة الدعم الفني في منصة ""يلا إنجاز"" عدم الموافقة على نشرها في الوقت الحالي.
+
+
+ندعوك إلى مراجعة تفاصيل خدمتك، والتأكد من مطابقتها لمعايير المنصة، ثم إعادة إرسالها بعد التعديل.
+
+📌 لمساعدتك، يمكنك التواصل معنا عبر الدعم الفني في المنصة.
+
+مع أطيب التحيات ✨  
+فريق يلا إنجاز
+";
+                        if(person.Email!=null)
+                        await send_email.SendEmailAsync(person.Email, subject, body);
+
+
+
+
+                        return Ok($"The serevs_student {ID_serves_student} Completed Delete ... ");
+
+
+                    }
+
+                    else
+                        return StatusCode(500, new { messege = "ERROR : Not Completed Delete ...." });
+
+
+
+
+
+                }
+                else
+                    return NotFound($"The Id {serves_student} Not Found...");
+
+            }
+
+
+        }
+
 
 
     }

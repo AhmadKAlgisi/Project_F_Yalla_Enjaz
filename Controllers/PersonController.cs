@@ -133,6 +133,74 @@ namespace Project_F_Yalla_Enjaz.Controllers
         }
 
 
+
+
+        [HttpPut("Ubdate_Email_BY_Admin {id_Person}", Name = "Ubdate_Email_BY_Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<string>> Ubdate_Email_BY_Admin(int id_Person,string New_Email)
+        {
+
+            if (string.IsNullOrEmpty(New_Email))
+            {
+                return BadRequest("Invalid person data.");
+            }
+
+            // Business_Person B_PERSON = Business_Person.GET_PERSON_BY_ID(id);//find object if success change mode ubdate 
+
+            Info_Person_In_Profile_Person_DTO_and_update B_PERSON_DTO = Business_Person.GET_Info_PERSON_BY_ID_Person_Using_Profile_Person(id_Person);
+
+
+            if (B_PERSON_DTO != null)
+            {
+
+                Business_Person B_berson = new Business_Person(B_PERSON_DTO, Business_Person.enMode.Update);
+                string Old_Email = B_berson.Email;
+                B_berson.Email = New_Email;
+
+
+                if (B_berson.save())
+
+                {
+                    Businnes_Send_Email sand_Email = new Businnes_Send_Email();
+
+                    string subject = "تم تحديث بريدك الإلكتروني في منصة يلا إنجاز";
+                    string body = $@"
+مرحباً {B_berson.F_name+" "+B_berson.L_name}،
+
+نحيطك علماً بأنه تم تحديث بريدك الإلكتروني الجامعي إلى بريد شخصي بناءً على طلبك عبر الدعم الفني.
+
+يمكنك الآن تسجيل الدخول باستخدام بريدك الجديد: {B_berson.Email}
+
+في حال لم تكن أنت من طلب التغيير، يرجى التواصل معنا فوراً.
+
+مع تحياتنا،
+فريق يلا إنجاز
+";
+
+                    await sand_Email.SendEmailAsync(B_berson.Email, subject, body);
+
+                    return Ok("تم نغير الايميل بنجاح");
+                }
+
+                else
+                {
+                    return StatusCode(500, new { Message = "EROOR : NOT UBDATE DATA ...." });
+                }
+
+            }
+            else
+                return NotFound("Not Found Object ...");
+
+
+        }
+
+
+
+
+
         [HttpDelete("DELETE_PERSON {id}", Name = "DELETE_PERSON")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -312,8 +380,8 @@ namespace Project_F_Yalla_Enjaz.Controllers
             if (B_PERSON != null)
             {
 
-
-                if (B_PERSON.Password == Current_Password)
+                
+                if (B_PERSON.Get_Passowrd_By_ID_Person(B_PERSON.ID) == Current_Password)
                 {
                     B_PERSON.Password = New_Password;
 

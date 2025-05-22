@@ -207,7 +207,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
 
-        [HttpGet("GET_INFO_REQUEST_ORDER{id_requset_order}", Name = "GET_INFO_REQUEST_ORDER")]
+        [HttpGet("GET_INFO_REQUEST_ORDER/{id_requset_order}", Name = "GET_INFO_REQUEST_ORDER")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -11,59 +11,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
     {
 
 
-        [HttpPost("ADD Student", Name = "ADD Student")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<USER_ADD_DTO> AddPesron(Student_ADD_and_find_DTO student)
-        {
-            if (student.ID_Unversty<1|| string.IsNullOrEmpty(student.University_mejor) || string.IsNullOrEmpty(student.Switch_Email) || string.IsNullOrEmpty(student.F_name) || string.IsNullOrEmpty(student.L_name) || string.IsNullOrEmpty(student.Email) || string.IsNullOrEmpty(student.password))
-            {
-                return BadRequest("Invalid User data.");
-            }
-
-
-            Person_DTO person = new Person_DTO(0, student.F_name, student.L_name, student.Email, student.password);
-            Business_Person B_PERSON = new Business_Person(person, Businees_Logic_Project.Business_Person.enMode.AddNew);
-
-            if (B_PERSON.save())
-            {
-                person.ID = B_PERSON.ID;//update data object after adding and saving data in data base
-
-
-                Cradet_DTO card = Businees_Cradt_Card.Create_New_DTO_Cradete_Card(B_PERSON.ID);
-
-                Businees_Cradt_Card B_Cradte_Card = new Businees_Cradt_Card(card, Businees_Cradt_Card.enmode.ADDNEW);
-                B_Cradte_Card.save();
-
-
-
-                Student_DTO Student = new Student_DTO(0, student.Switch_Email, student.University_mejor, person.ID, student.ID_Unversty);
-                Businees_Student B_student = new Businees_Student(Student, Businees_Student.enmode.ADDNEW);
-
-                if(B_student.save())
-                {
-                   
-                    student.ID_person = B_PERSON.ID;
-                    student.ID_student = B_student.ID;
-                    return CreatedAtRoute("ADD User", new { id = B_student.ID}, student);
-                }
-
-                ///اذا كان في مشكلة في اضافة المستخدم 
-                else
-                    return StatusCode(500, new { message = "ERROR : NOT COMPLETED ADD USER ..." });
-
-
-
-            }
-            ///اذا كان في مشكلة في اضافة الشخص  
-            else
-                return StatusCode(500, new { message = "ERROR : NOT COMPLETED ADD USER ..." });
-
-
-
-
-        }
-
+      
 
 
 
@@ -142,6 +90,68 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
 
+        [HttpPut("ADMAIN_UPDATE_STUDENT_SET_UN_ACTIVE", Name = "ADMAIN_UPDATE_STUDENT_SET_UN_ACTIVE")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<string> ADMAIN_UPDATE_STUDENT_SET_UN_ACTIVE()
+        {
+            try
+            {
+                bool result = Businees_Student.ADMAIN_UPDATE_STUDENT_SET_UN_ACTIVE();
+
+                if (result)
+                {
+                    return Ok("✅ تم تحديث حالة الطلاب بنجاح.");
+                }
+                else
+                {
+                    return StatusCode(500, new { message = "❌ لم يتم تنفيذ التحديث. تحقق من الإجراء المخزن أو البيانات." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "⚠️ خطأ تقني في الخادم", error = ex.Message });
+            }
+        }
+
+
+
+
+
+        [HttpGet("ADMIN_GET_INFO_FROM_STUDENT_IN_WORK_CONVERT_EMAIL_BY_ADMIN{Email}", Name = "ADMIN_GET_INFO_FROM_STUDENT_IN_WORK_CONVERT_EMAIL_BY_ADMIN")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Person_DTO> ADMIN_GET_INFO_FROM_STUDENT_IN_WORK_CONVERT_EMAIL_BY_ADMIN(string Email)
+        {
+
+            if (string.IsNullOrEmpty(Email))
+            {
+                return BadRequest("ERROR: enter data.... ");
+            }
+
+
+            GET_ALL_INFO_FROM_STUDENT_IN_ADMIN_WORK object_DTO = Businees_Student.ADMIN_GET_INFO_FROM_STUDENT_IN_WORK_CONVERT_EMAIL_BY_ADMIN(Email);
+
+
+
+
+
+            if (object_DTO != null)
+            {
+
+                return Ok(object_DTO);
+            }
+            else
+            {
+                return NotFound("Data Not Found ....");
+            }
+
+
+
+
+        }
 
 
 

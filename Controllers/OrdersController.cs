@@ -111,7 +111,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
 
-        [HttpGet("GET_LIST_ID_ORDER_complemnt_BY_ID_STUDENT", Name = "GET_LIST_ID_ORDER_complemnt_BY_ID_STUDENT")]
+        [HttpGet("GET_LIST_ID_ORDER_complemnt_BY_ID_STUDENT{id_student}", Name = "GET_LIST_ID_ORDER_complemnt_BY_ID_STUDENT")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Name_Serves_DTO> GET_LIST_ID_ORDER_complemnt_BY_ID_STUDENT(int id_student)
@@ -231,6 +231,46 @@ namespace Project_F_Yalla_Enjaz.Controllers
                 return Ok(list_request_order);
 
         }
+
+
+
+
+
+        [HttpGet("GET_LIST_ID_ORDERS_In_PROGGRES_BY_ID_Person{ID_Person}", Name = "GET_LIST_ID_ORDERS_In_PROGGRES_BY_ID_Person")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<Name_Serves_DTO> GET_LIST_ID_ORDERS_In_PROGGRES_BY_ID_Person(int ID_Person)
+        {
+            var list_order = Businees_Orders.GET_LIST_ID_ORDERS_In_PROGGRES_BY_ID_Person(ID_Person);
+
+            if (list_order.Count == 0)
+            {
+                return NotFound("لا يوجد طلبات حاليا لك .... ");
+            }
+            else
+                return Ok(list_order);
+
+        }
+
+
+
+
+        [HttpGet("GET_LIST_ID_ORDER_complemnt_BY_ID_PERSON{iD_Person}", Name = "GET_LIST_ID_ORDER_complemnt_BY_ID_PERSON")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<Name_Serves_DTO> GET_LIST_ID_ORDER_complemnt_BY_ID_PERSON(int iD_Person)
+        {
+            var list_order = Businees_Orders.GET_LIST_ID_ORDER_Complement_BY_ID_PERSON(iD_Person);
+
+            if (list_order.Count == 0)
+            {
+                return NotFound("لا يوجد طلبات حاليا لك .... ");
+            }
+            else
+                return Ok(list_order);
+
+        }
+
 
 
 

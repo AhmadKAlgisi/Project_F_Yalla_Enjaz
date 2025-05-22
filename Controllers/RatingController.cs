@@ -80,8 +80,32 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
 
-    
+
+        [HttpPost("Add_Rating", Name = "Add_Rating")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public ActionResult<Rating_DTO> Add_Rating(Rating_DTO Rating)
+        {
+            if (string.IsNullOrEmpty(Rating.Comment) ||Rating.ID_Orders<0|| Rating.Rating<0)
+            {
+                return BadRequest("Invalid person data.");
+            }
+
+         
+            Business_Rating B_rating = new Business_Rating(Rating, Business_Rating.enmode.ADDNEW);
+            if (B_rating.save())
+            {
+                Rating.ID = B_rating.ID;
+                return Ok(B_rating.SDTO);
+            }
+            else
+                return StatusCode(500, new { Message = "EROOR : NOT UBDATE DATA ...." });
 
 
-}
+        }
+
+
+
+    }
 }
