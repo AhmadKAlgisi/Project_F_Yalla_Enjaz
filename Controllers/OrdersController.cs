@@ -26,45 +26,58 @@ namespace Project_F_Yalla_Enjaz.Controllers
             {
                 INFO_REQUEST_ORDER_DTO request_order = Businees_Request_Order.GET_INFO_REQUEST_ORDER_BY_ID_REQUEST_ORDER(ID_Request_Orders);
 
-                if (request_order!=null&& Businees_Orders.Accept_Request_orders_And_Add_Orders(ID_Request_Orders, ID_Student_Provider ))
+
+
+                if (request_order != null)
                 {
+                    int id_orders = Businees_Orders.Accept_Request_orders_And_Add_Orders(ID_Request_Orders, ID_Student_Provider);
+                    if (id_orders != -1)
+                    {
+                        Complete_Bument_Order complete_orders = new Complete_Bument_Order(id_orders, request_order.ID_pesron_Presenter_Order, ID_Student_Provider, request_order.Price);
+                        Businees_Orders.Complete_Buyment_Order_from_Accept_Orders(complete_orders);
 
 
-               
+                        //هاي عشان يبعت hhdldghj
+                        YallaEnjazMailer send_email = new YallaEnjazMailer();
 
-                 
+                        Business_Person person_present_order = Business_Person.GET_PERSON_BY_ID(request_order.ID_pesron_Presenter_Order);
 
-                    //هاي عشان يبعت hhdldghj
-                    Businnes_Send_Email send_email = new Businnes_Send_Email();
+                        INFO_FROM_STUDENT_UNVIRSTY_PERSON_USED_SHOW_SERVES_DTO Student = Businees_Student.GET_INFO_FROM_STUDENT_UNVIRSTY_PERSON_USED_SHOW_SERVES_BY_ID_STUDENT(ID_Student_Provider);
 
-                    Business_Person person_present_order = Business_Person.GET_PERSON_BY_ID(request_order.ID_pesron_Presenter_Order);
+                        string subject = "🔔 قبول طلبك على منصة يلا إنجاز";
 
-                    INFO_FROM_STUDENT_UNVIRSTY_PERSON_USED_SHOW_SERVES_DTO Student = Businees_Student.GET_INFO_FROM_STUDENT_UNVIRSTY_PERSON_USED_SHOW_SERVES_BY_ID_STUDENT(ID_Student_Provider);
+                        string body = $@"
+مرحباً {person_present_order.F_name} {person_present_order.L_name} 👋،
 
+تم قبول طلبك على منصة <b>يلا إنجاز</b> بعنوان: <b>{request_order.Titel_serves}</b>  
+من قِبل مقدم الخدمة: <b>{Student.FullName}</b>.
 
-                        string subject = "🔔 قبول طلبك على منصة يلا انجاز";
-
-                    string body = $@"
-مرحباً {person_present_order.F_name} {person_present_order.L_name} 👋
-
-تم قبول طلبك على منصة ""يلا إنجاز"" بعنوان: {request_order.Titel_serves}  
-من قِبل مقدم الخدمة: {Student.FullName}.
-
-يرجى تسجيل الدخول إلى حسابك على المنصة لمراجعة تفاصيل الطلب والتواصل مع مقدم الخدمة.
+💳 تم خصم مبلغ <b style='color:#2d89ef;'>{request_order.Price} دينار</b> من بطاقتك الافتراضية، وسيتم تحويل نصف المبلغ إلى مقدم الخدمة الآن، والنصف الآخر بعد اكتمال الخدمة دون وجود شكوى.
 
 📅 تاريخ الطلب: {DateTime.Now:yyyy-MM-dd HH:mm}  
 
+يرجى تسجيل الدخول إلى حسابك على المنصة لمراجعة تفاصيل الطلب والتواصل مع مقدم الخدمة.
+
 بالتوفيق ✨  
-فريق يلا إنجاز
+فريق <b>يلا إنجاز</b>
 ";
 
 
 
-                    await send_email.SendEmailAsync(person_present_order.Email, subject, body);
 
-                    return Ok("تم اضافة الطلب بنجاح");
 
+                        await send_email.SendEmailAsync(person_present_order.Email, subject, body);
+
+                        return Ok("تم اضافة الطلب بنجاح");
+
+                    }
+                    else
+                    {
+                        return StatusCode(500, new { message = "ERROR: NOT COMPLETED DELETE OBJECT..." });
+                    }
                 }
+
+               
 
 
 
@@ -152,52 +165,18 @@ namespace Project_F_Yalla_Enjaz.Controllers
                 string email = Business_Person.GET_Email_By_id_person(orders.ID_pesron_Presenter_Order);
                 string subject = "تم إنهاء طلبك بنجاح";
 
-                string body = @"
-<html>
-<head>
-  <style>
-    .email-container {
-        font-family: Arial, sans-serif;
-        padding: 20px;
-        background-color: #f7f7f7;
-    }
-    .email-content {
-        background-color: #ffffff;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .logo {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .message {
-        font-size: 16px;
-        color: #333;
-        line-height: 1.6;
-    }
-  </style>
-</head>
-<body>
-  <div class='email-container'>
-    <div class='email-content'>
-      <div class='logo'>
-        <img src='https://i.imgur.com/N3xO6bI.png' alt='Yalla Injaz Logo' width='150'/>
-      </div>
-      <div class='message'>
-        <p>مرحبًا،</p>
-        <p>نود إعلامك بأنه قد تم <strong>إنهاء الخدمة</strong> المتعلقة بطلبك بنجاح.</p>
-        <p>شكرًا لاستخدامك منصتنا <strong>يلا إنجاز</strong>. في حال وجود أي استفسار أو ملاحظة، لا تتردد في التواصل معنا.</p>
-        <p>مع التحية،<br>فريق يلا إنجاز</p>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
-";
+                string body =
+                @"مرحبًا،
+
+نود إعلامك بأنه قد تم إنهاء الخدمة المتعلقة بطلبك بنجاح.
+
+شكرًا لاستخدامك منصتنا (يلا إنجاز). في حال وجود أي استفسار أو ملاحظة، لا تتردد في التواصل معنا.
+
+مع التحية،
+فريق يلا إنجاز";
 
 
-                Businnes_Send_Email send_email = new Businnes_Send_Email();
+                YallaEnjazMailer send_email = new YallaEnjazMailer();
                 await send_email.SendEmailAsync(email, subject, body);
 
                 return Ok("تم إنهاء الخدمة بنجاح");

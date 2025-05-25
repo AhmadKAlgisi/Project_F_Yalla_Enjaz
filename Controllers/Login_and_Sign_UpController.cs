@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Poject_F_Data_Acsses_Yalla_Enjaz;
+using System;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq.Expressions;
 
@@ -31,28 +32,29 @@ namespace Project_F_Yalla_Enjaz.Controllers
                     // توليد رمز OTP
                     Random random = new Random();
                     int pin = random.Next(10000, 99999);
+                // إعداد الرسالة
+                string subject = "رمز التحقق الخاص بك - منصة يلا إنجاز";
 
-                    // إعداد الرسالة
-                    string subject = "🔐 رمز التحقق الخاص بك - منصة يلا إنجاز";
+                string body = $@"
+    <html>
+        <body style='font-family: Arial, sans-serif; direction: rtl; text-align: right;'>
+            <h2 style='color: #2c3e50;'>مرحبًا،</h2>
+            <p>رمز التحقق الخاص بك لتأكيد العملية هو:</p>
+            <div style='font-size: 24px; font-weight: bold; color: #e74c3c; margin: 10px 0;'>{pin}</div>
+            <p>يرجى إدخال هذا الرمز خلال <strong>5 دقائق</strong>.</p>
+            <p>إذا لم تطلب هذا الرمز، يمكنك تجاهل هذه الرسالة.</p>
+            <br />
+            <p>تحياتنا،<br />فريق <strong>يلا إنجاز</strong></p>
+        </body>
+    </html>";
 
-                    string body = $@"
-مرحبًا 👋،<br><br>
 
-رمز التحقق (OTP) الخاص بك لتأكيد العملية على منصة <b>يلا إنجاز</b> هو:<br><br>
+                // إرسال البريد الإلكتروني
 
-<h2 style='color:#2d89ef;'>{pin}</h2><br>
+                YallaEnjazMailer send_email = new YallaEnjazMailer();
+               // Businnes_Send_Email send_email = new Businnes_Send_Email();
 
-يرجى إدخال هذا الرمز خلال <b>5 دقائق</b> لضمان أمان حسابك.<br><br>
-
-إذا لم تطلب هذا الرمز، يمكنك تجاهل هذه الرسالة.<br><br>
-
-تحياتنا،<br>
-فريق يلا إنجاز
-";
-
-                    // إرسال البريد الإلكتروني
-                    Businnes_Send_Email send_email = new Businnes_Send_Email();
-                    await send_email.SendEmailAsync(email, subject, body);
+                await send_email.SendEmailAsync(email, subject, body);
 
                     return Ok(pin); // إرسال الـ OTP للفرونت
                 }
@@ -91,7 +93,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
                 Businees_Cradt_Card B_Cradte_Card = new Businees_Cradt_Card(card, Businees_Cradt_Card.enmode.ADDNEW);
                 B_Cradte_Card.save();
 
-                Businnes_Send_Email Email = new Businnes_Send_Email();
+                YallaEnjazMailer send_email = new YallaEnjazMailer();
                 string subject = "🎉 مرحباً بك في منصة يلا إنجاز - معلومات بطاقتك البنكية الافتراضية";
 
                 string body = $@"
@@ -113,7 +115,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 فريق <b>يلا إنجاز</b>
 ";
 
-                await Email.SendEmailAsync(B_PERSON.Email, subject, body);
+                await send_email.SendEmailAsync(B_PERSON.Email, subject, body);
 
 
 
@@ -182,7 +184,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
                     if (B_student.save())
                     {
-                        Businnes_Send_Email Email = new Businnes_Send_Email();
+                        YallaEnjazMailer send_email = new YallaEnjazMailer();
                         student.ID_person = B_PERSON.ID;
                         student.ID_student = B_student.ID;
                         student_login_and_sigup_DTO info_student = new student_login_and_sigup_DTO(student.ID_person, student.ID_student);
@@ -208,7 +210,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 فريق <b>يلا إنجاز</b>
 ";
 
-                        await Email.SendEmailAsync(B_PERSON.Email, subject, body);
+                        await send_email.SendEmailAsync(B_PERSON.Email, subject, body);
 
 
                         context_info Context = new context_info(B_PERSON.ID,B_student.ID, 2, B_PERSON.Account_Type);
@@ -248,59 +250,140 @@ namespace Project_F_Yalla_Enjaz.Controllers
         }
 
 
-        //[HttpGet("Check_Login{Email},{Passowrd}", Name = "Check_Login")]
-        //public ActionResult<context_info> Check_Login(string Email, string Passowrd)
-        //{
-        //    if (string.IsNullOrEmpty(Email) || string.IsNullOrEmpty(Passowrd))
-        //    {
-        //        return BadRequest("خطاء في ادخال الايميل او كلمة المرور ");
-        //    }
-        //    else
-        //    {
-        //        GET_ALL_INFO_FROM_STUDENT_IN_ADMIN_WORK object_DTO = Businees_Student.ADMIN_GET_INFO_FROM_STUDENT_IN_WORK_CONVERT_EMAIL_BY_ADMIN(Email);
-        //        if (object_DTO != null)
-        //        {
-
-        //            Business_Person B_PERSON = Business_Person.GET_PERSON_BY_ID(object_DTO.ID_Person);//find object if success change mode ubdate 
-        //            if (B_PERSON.Account_Type.ToUpper() == "USER" || B_PERSON.Account_Type.ToLower() == "user")
-        //            {
-        //                if (B_PERSON.Get_Passowrd_By_ID_Person(B_PERSON.ID) == Passowrd)
-        //                {
-        //                    context_info Info = new context_info(B_PERSON.ID, null, B_PERSON.ID_Staute ?? 0, "USER");
-        //                    return Ok(Info);
-        //                }
-        //                else
-        //                {
-        //                    return BadRequest("خطاء في كلمة المرور");
-        //                }
-
-        //            }
-        //            else
-        //            {
-        //                return BadRequest("حساب student ");
-        //            }
 
 
 
+        [HttpGet("LOGIN_BERSON_BY_EMAIL_AND_PASSOWRD/{Email},{Passowrd}", Name = "LOGIN_BERSON_BY_EMAIL_AND_PASSOWRD")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<context_info> LOGIN_BERSON_BY_EMAIL_AND_PASSOWRD(string Email, string Passowrd)
+        {
+            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Passowrd))
+            {
+                return BadRequest("⚠️ يرجى إدخال البريد الإلكتروني وكلمة المرور.");
+            }
+
+            bool emailExists = Business_Person.Check_If_Email_Exists(Email);
+
+            if (!emailExists)
+            {
+                return NotFound("❌ لا يوجد حساب مرتبط بهذا البريد الإلكتروني.");
+            }
+
+            // التحقق من تطابق البريد وكلمة المرور
+            Business_Person person = Business_Person.Login_BERSON_BY_EMAIL_AND_Passowrd(Email, Passowrd);
+
+            if (person == null)
+            {
+                return NotFound("❌ البريد الإلكتروني أو كلمة المرور غير صحيحة.");
+            }
+
+            context_info info = new context_info(
+                person.ID_Person,
+                person.ID_student,
+                person.Is_Stutas_Accunt,
+                person.Account_Type
+            );
+
+            return Ok(info);
+        }
+
+
+        [HttpGet("Forget_Passowrd/{Email},{new_passowrd}", Name = "Forget_Passowrd")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<string> Forget_Passowrd(string Email, string new_passowrd)
+        {
+            if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(new_passowrd))
+            {
+                return BadRequest("⚠️ يرجى إدخال البريد الإلكتروني وكلمة المرور.");
+            }
+
+            bool emailExists = Business_Person.Check_If_Email_Exists(Email);
+            if (!emailExists)
+            {
+                return NotFound("❌ لا يوجد حساب مرتبط بهذا البريد الإلكتروني.");
+            }
+
+            int ID_Person = Business_Person.GET_ID_PERSON_BY_EMAIL(Email);
+            if (ID_Person == 0)
+            {
+                return NotFound("❌ لا يوجد حساب مرتبط بهذا البريد الإلكتروني.");
+            }
+
+            Business_Person person = Business_Person.GET_PERSON_BY_ID(ID_Person);
+            if (person == null)
+            {
+                return StatusCode(500, new { Message = "🚨 حصل خطأ أثناء معالجة الطلب. يرجى المحاولة لاحقاً." });
+            }
+
+            bool changed = person.change_passowrd(ID_Person, new_passowrd);
+            if (!changed)
+            {
+                return BadRequest("❌ لم يتم تغيير كلمة المرور.");
+            }
+
+            // إرسال الإيميل بعد النجاح
+            YallaEnjazMailer send_email = new YallaEnjazMailer();
+
+            string subject = "🔐 تم تغيير كلمة المرور الخاصة بك على منصة يلا إنجاز";
+            string body = $@"
+مرحباً عزيزي {person.F_name} {person.L_name} 👋،
+
+نود إعلامك بأنه تم <b>تغيير كلمة المرور الخاصة بحسابك</b> على منصة <b>يلا إنجاز</b> بنجاح.
+
+إذا قمت أنت بطلب هذا التغيير، فلا داعي لأي إجراء آخر.  
+أما إذا لم تكن أنت من قام بهذا التغيير، فقد يكون هناك نشاط غير معتاد على حسابك. في هذه الحالة نوصيك فوراً بـ:
+<ul>
+  <li>محاولة تسجيل الدخول وتغيير كلمة المرور مجددًا.</li>
+  <li>التواصل معنا عبر الدعم الفني إذا واجهت أي مشكلة.</li>
+</ul>
+
+🚨 <b>تنبيه:</b> الحفاظ على أمان حسابك مسؤوليتنا ومسؤوليتك، لذا لا تشارك معلوماتك مع أي جهة غير موثوقة.
+
+نتمنى لك تجربة آمنة ومميزة معنا 💼🔒
+
+تحياتنا،<br/>
+<b>فريق يلا إنجاز</b>
+";
+            _ = send_email.SendEmailAsync(person.Email, subject, body); // Fire and forget
+
+            return Ok("✅ تم تغيير كلمة المرور بنجاح، وتم إرسال إشعار على بريدك الإلكتروني.");
+        }
+
+        [HttpGet("Update_Student_Is_Avtive{ID_Person}")]
+        public ActionResult<bool> Update_Student_Is_Avtive(int ID_Person)
+        {
+
+            Info_Person_In_Profile_Person_DTO_and_update B_PERSON_DTO = Business_Person.GET_Info_PERSON_BY_ID_Person_Using_Profile_Person(ID_Person);
+
+
+            if (B_PERSON_DTO != null)
+            {
+
+                Business_Person B_berson = new Business_Person(B_PERSON_DTO, Business_Person.enMode.Update);
+                B_berson.ID_Staute = 2;
+
+
+                if (B_berson.save())
+
+                    return Ok("تم تغير حالة الحساب الى نشط بنجاح");
+
+                else
+                {
+                    return StatusCode(500, new { Message = "EROOR : NOT UBDATE DATA ...." });
+                }
+
+            }
+            else
+                return NotFound("لا يوجد حساب ");
+        }
 
 
 
-        //        }
-        //        else
-        //        {
 
-        //            return NotFound("لا يوجد حساب مسجل في هذه المعلومات ");
-
-
-        //        }
-
-
-
-
-
-        //    }
-
-        //}
 
     }
 }

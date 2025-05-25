@@ -43,7 +43,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
                                             .ToList();
 
                     //هاي عشان يبعت hhdldghj
-                    Businnes_Send_Email send_email = new Businnes_Send_Email();
+                    YallaEnjazMailer send_email = new YallaEnjazMailer();
 
                     foreach (var id_student in numbers_ID_Providers)
                     {//تجيب معلومات student 
@@ -67,7 +67,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 ";
 
                       
-                    await  send_email.SendEmailAsync(Student.Email, subject, body);
+                    await send_email.SendEmailAsync(Student.Email, subject, body);
 
 
                     }

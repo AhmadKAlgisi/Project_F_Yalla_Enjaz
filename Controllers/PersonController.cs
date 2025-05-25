@@ -164,7 +164,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
                 if (B_berson.save())
 
                 {
-                    Businnes_Send_Email sand_Email = new Businnes_Send_Email();
+                    YallaEnjazMailer send_email = new YallaEnjazMailer();
 
                     string subject = "تم تحديث بريدك الإلكتروني في منصة يلا إنجاز";
                     string body = $@"
@@ -180,7 +180,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 فريق يلا إنجاز
 ";
 
-                    await sand_Email.SendEmailAsync(B_berson.Email, subject, body);
+                    await send_email.SendEmailAsync(B_berson.Email, subject, body);
 
                     return Ok("تم نغير الايميل بنجاح");
                 }

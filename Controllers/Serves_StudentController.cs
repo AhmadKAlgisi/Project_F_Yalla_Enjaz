@@ -344,7 +344,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
                 {
                     Businees_Student student = Businees_Student.GET_Student_BY_ID(B_serves.ID_Student);
                     Business_Person person = Business_Person.GET_PERSON_BY_ID(student.ID_person);
-                    Businnes_Send_Email send_email = new Businnes_Send_Email();
+                    YallaEnjazMailer send_email = new YallaEnjazMailer();
 
                     string subject = "✅ تم قبول خدمتك على منصة يلا إنجاز";
 
@@ -408,7 +408,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
                     if (serves_student.ADMIN_Delete_Serves_Student_By_Id_Serve_From_Admin(ID_serves_student))
                     {
-                        Businnes_Send_Email send_email = new Businnes_Send_Email();
+                         YallaEnjazMailer send_email = new YallaEnjazMailer();
                         Businees_Student student = Businees_Student.GET_Student_BY_ID(serves_student.ID_Student);
                         Business_Person person = Business_Person.GET_PERSON_BY_ID(student.ID_person);
 
