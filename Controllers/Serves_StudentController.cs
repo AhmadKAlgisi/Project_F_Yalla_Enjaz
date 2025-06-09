@@ -264,7 +264,7 @@ namespace Project_F_Yalla_Enjaz.Controllers
         [HttpGet("ADMIN_Function_GET_LIST_ID_SERVES_STUDENT_IN_PROGRASS_processing", Name = "ADMIN_Function_GET_LIST_ID_SERVES_STUDENT_IN_PROGRASS_processing")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Name_Serves_DTO> ADMIN_Function_GET_LIST_ID_SERVES_STUDENT_IN_PROGRASS_processing()
+        public ActionResult<int> ADMIN_Function_GET_LIST_ID_SERVES_STUDENT_IN_PROGRASS_processing()
         {
             var list_ID_SERVES_STUDENT = Businees_Serves_Student.ADMIN_Function_GET_LIST_ID_SERVES_STUDENT_IN_PROGRASS_processing();
 

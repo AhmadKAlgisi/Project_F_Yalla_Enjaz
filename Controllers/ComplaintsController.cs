@@ -62,5 +62,56 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
 
+        [HttpGet("GET_ID_ORDERS_FROM_EXITE_COMPLEMENT", Name = "GET_ID_ORDERS_FROM_EXITE_COMPLEMENT")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<int> GET_ID_ORDERS_FROM_EXITE_COMPLEMENT()
+        {
+            var list_ID_orders = Businees_Complaints.GET_ID_ORDERS_FROM_EXITE_COMPLEMENT();
+
+            if (list_ID_orders.Count == 0)
+            {
+                return NotFound("لا يوجد اي طلب معلقة حاليا .....");
+            }
+            else
+                return Ok(list_ID_orders);
+
+        }
+
+
+
+        [HttpGet("End_the_complaint{ID_Order}", Name = "End_the_complaint")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<Complaints_QUERE_DTO> End_the_complaint(int ID_Order)
+        {
+            if (ID_Order < 0)
+                return BadRequest("ID غير صالح");
+            try
+            {
+                Complaints_QUERE_DTO complaints = Businees_Complaints.Get_Complaints_By_ID_Order(ID_Order);
+
+                if (complaints == null)
+                {
+                    return NotFound("لا يوجد اي شكاوي على الطلب متاحة  ");
+                }
+                else
+
+                {
+                    if(Businees_Complaints.End_the_complaint(ID_Order))
+                    {
+                        return Ok("تم انهاء الشكوى بنجاح");
+                    }
+                    else 
+                    { 
+                       return StatusCode(500, new { Message = "EROOR :Server Error" });
+                    }
+                }
+            }
+            catch { return StatusCode(500, new { Message = "EROOR :Server Error" }); }
+        }
+
+
+
     }
 }

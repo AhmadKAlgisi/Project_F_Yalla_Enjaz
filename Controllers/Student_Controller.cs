@@ -155,5 +155,42 @@ namespace Project_F_Yalla_Enjaz.Controllers
 
 
 
+
+        [HttpGet("ADMIN_GET_ALL_INFO_statistics_By_Id_Student{id_student}", Name = "ADMIN_GET_ALL_INFO_statistics_By_Id_Student")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Person_DTO> ADMIN_GET_ALL_INFO_statistics_By_Id_Student(int id_student)
+        {
+
+            if (id_student < 1)
+            {
+                return BadRequest("ERROR: enter data.... ");
+            }
+
+
+            INFO_statistics_DTO info = Businees_Student.ADMIN_GET_ALL_INFO_statistics_By_Id_Student(id_student);
+
+
+
+
+
+            if (info != null)
+            {
+                return Ok(info);
+            }
+            else
+            {
+                return NotFound("Data Not Found ....");
+            }
+
+
+
+
+        }
+
+
+
+
     }
 }
